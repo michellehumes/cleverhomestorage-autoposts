@@ -1,0 +1,39 @@
+name: Auto-generate and publish blog posts
+
+on:
+  schedule:
+    # Runs at 9 AM, 2 PM, and 7 PM EST (14:00, 19:00, 00:00 UTC)
+    - cron: '0 14,19 * * *'  # 9 AM and 2 PM EST
+    - cron: '0 0 * * *'      # 7 PM EST (previous day UTC)
+  workflow_dispatch:  # Allows manual triggering
+
+jobs:
+  generate-and-publish:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install openai requests python-dotenv
+      
+      - name: Generate and publish post
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          WP_URL: ${{ secrets.WP_URL }}
+          WP_USERNAME: ${{ secrets.WP_USERNAME }}
+          WP_APP_PASSWORD: ${{ secrets.WP_APP_PASSWORD }}
+          AMAZON_TAG: ${{ secrets.AMAZON_TAG }}
+        run: |
+          python generate_post.py
+      
+      - name: Log completion
+        run: |
+          echo "Post generated and published at $(date)"
