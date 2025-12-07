@@ -148,7 +148,8 @@ def publish_to_wordpress(title, content):
         url,
         json=data,
         headers=headers,
-        auth=(WORDPRESS_USERNAME, WORDPRESS_APP_PASSWORD)
+        auth=(WORDPRESS_USERNAME, WORDPRESS_APP_PASSWORD),
+        verify=False
     )
     
     if response.status_code == 201:
